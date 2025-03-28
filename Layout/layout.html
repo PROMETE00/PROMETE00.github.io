@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Replica Diseño con Panel Flotante</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Panel flotante con esquinas redondeadas -->
+  <div id="main" class="max-w-screen-lg mx-auto my-8 bg-white shadow-lg rounded-xl p-8">
+
+    <!-- Contenedor del header y hero con fondo gris claro -->
+    <div class="relative rounded-xl p-8 h-[500px]" style="background-color: rgba(214, 218, 223, 0.596);">
+      
+      <!-- Imagen como fondo posicionada -->
+      <img 
+        src="/Layout/src/hand-phone.png"
+        alt="Teléfono en mano"
+        class="absolute top-0 right-0 max-w-sm opacity-80 z-0"
+        style="height: 400px;" />
+
+      <!-- Encabezado / Navbar -->
+      <header class="mb-4 relative z-10">
+        <div class="flex items-center justify-between px-4 py-4 bg-white rounded-xl shadow">
+          
+          <!-- Izquierda: logo + links -->
+          <div class="flex items-center space-x-6">
+            <div class="text-xl font-bold">
+              <img src="/Layout/src/letter-D.png" alt="Logo" style="height: 50px;" />
+            </div>
+            <nav class="space-x-4 hidden md:flex">
+              <a href="#" class="text-gray-700 hover:text-black">Technology</a>
+              <a href="#" class="text-gray-700 hover:text-black">Pricing</a>
+            </nav>
+          </div>
+
+          <!-- Derecha: About, Blog, View Demo -->
+          <div class="flex items-center space-x-4">
+            <a href="#" class="text-gray-700 hover:text-black">About</a>
+            <a href="#" class="text-gray-700 hover:text-black">Blog</a>
+            <a href="#"
+              class="bg-black text-white px-5 py-2 rounded-full hover:bg-gray-900 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+              View Demo
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="relative z-10 mt-16">
+        <div class="flex flex-col lg:flex-row items-center">
+          <!-- Texto -->
+          <div class="w-full lg:w-1/2 mb-8 lg:mb-0">
+            <p class="text-gray-600 text-xl mb-4">
+              Save time and money.<br>Automated Inventory Management
+            </p>
+            <h1 class="text-[60px] font-bold leading-tight">
+              Optimize,<br class="hidden md:block" /> Outperform
+            </h1>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Sección de texto destacado -->
+    <section class="text-center my-12">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        Leverage the power <br>of AI in 
+        <span class="inline-flex items-center">
+          <img src="/Layout/src/caras.png" alt="User1" class="w-8px h-8 rounded-full mx-1" />
+        </span>
+        aircraft<br> parts procurement
+      </h2>
+    </section>
+
+    <!-- Sección con lista de beneficios y gráfica 40% -->
+ <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 items-start">
+
+  <!-- 🖼️ Columna 1: Imagen + Botón -->
+  <div class="flex flex-col items-start justify-start w-full space-y-4">
+    <img 
+      src="/Layout/src/representation-user-experience-interface-design.jpg" 
+      alt="Ejemplo de dashboard" 
+      class="w-full max-w-full"
+      style="height: 300px;" 
+    />
+    <button class="px-5 py-2 bg-black text-white rounded hover:opacity-80 transition">
+      Demo our dashboard
+    </button>
+  </div>
+
+  <!-- 📋 Columna 2: Bloques de contenido con separación y líneas -->
+  <div class="flex flex-col w-full space-y-8">
+    
+    <!-- Fila 1 -->
+    <div class="w-full">
+      <div class="flex gap-6 items-start w-full max-w-[660px]">
+        <div class="w-1/3 font-semibold text-lg leading-tight">01 AI Revolution</div>
+        <div class="w-2/3 text-gray-600 text-sm leading-snug max-w-[300px]">
+          Access procurement securely with Blockchain, ensuring part authenticity.
+        </div>
+      </div>
+      <div class="border-b border-gray-300 w-2/3 mt-4"></div>
+    </div>
+
+    <!-- Fila 2 -->
+    <div class="w-full">
+      <div class="flex gap-6 items-start w-full max-w-[660px]">
+        <div class="w-1/3 font-semibold text-lg leading-tight">02 AI Chatbot JET</div>
+        <div class="w-2/3 text-gray-600 text-sm leading-snug max-w-[300px]">
+          Boost sourcing with AI Chatbot JET on popular messaging platforms.
+        </div>
+      </div>
+      <div class="border-b border-gray-300 w-2/3 mt-4"></div>
+    </div>
+
+    <!-- Fila 3 -->
+    <div class="w-full">
+      <div class="flex gap-6 items-start w-full max-w-[660px]">
+        <div class="w-1/3 font-semibold text-lg leading-tight">03 AI Assistance</div>
+        <div class="w-2/3 text-gray-600 text-sm leading-snug max-w-[300px]">
+          Interact efficiently with our system using voice commands.
+        </div>
+      </div>
+      <div class="border-b border-gray-300 w-2/3 mt-4"></div>
+    </div>
+  </div>
+
+  <!-- ✅ Columna 3: Bloque verde + texto -->
+  <div class="flex flex-col items-center justify-start space-y-6 w-full">
+    <div class="bg-green-200 text-green-900 rounded-lg p-8 w-full max-w-xs text-center">
+      <div class="text-6xl font-bold mb-4">40%</div>
+      <p class="text-lg">
+        JET AI Chatbot slashes<br> response times.
+      </p>
+    </div>
+    <p class="text-gray-500 text-sm px-4 text-center">
+      Explore a multitude of benefits meticulously tailored to meet the unique needs of buyers.
+    </p>
+  </div>
+</section>
+
+      
+  </div>
+
+</body>
+</html>
