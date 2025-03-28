@@ -1,6 +1,3 @@
 # PROMETE00.github.io
 
-
--Pagina principal
-
-[https](https://promete00.github.io/)
+[GithubPage MAIN](https://promete00.github.io/)
