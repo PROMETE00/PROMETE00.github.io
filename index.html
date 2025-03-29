@@ -9,7 +9,7 @@
 <body>
     <div class="Navigator">
         <nav>
-            <a href="/index.html">Mi blog</a>
+            <a href="/index.html" class="active">Mi blog</a>
             <a href="/Login/login.html">Login</a>
             <a href="/cardAripods/Airpods.html">Card Airpods</a>
             <a href="/Dashboard/dashboard.html">DashBoard</a>
@@ -47,50 +47,35 @@
     </main>
 </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Normalizar la ruta actual (eliminar '/' final y considerar 'index.html' como '/')
-        let currentPath = window.location.pathname;
-        if (currentPath.endsWith('/')) {
-            currentPath = currentPath.slice(0, -1);
-        }
-        if (currentPath === '' || currentPath.endsWith('index.html')) {
-            currentPath = '/';
-        }
+    const links = document.querySelectorAll(".Navigator a");
+    const activeLink = document.querySelector(".Navigator a.active");
+    let restoreTimeout = null;
 
-        const navLinks = document.querySelectorAll('.Navigator a');
-        let activeLinkFound = false;
+    links.forEach(link => {
+        link.addEventListener("mouseenter", () => {
+            if (link !== activeLink) {
+                // Apagar activo del index
+                activeLink.classList.remove("active");
+                link.classList.add("hovering");
 
-        navLinks.forEach(link => {
-            // Normalizar la ruta del enlace
-            let linkPath = link.getAttribute('href');
-            if (linkPath.endsWith('/')) {
-                linkPath = linkPath.slice(0, -1);
-            }
-            if (linkPath.endsWith('index.html')) {
-                linkPath = linkPath.replace('index.html', '');
-                if (linkPath === '') linkPath = '/';
-            }
-
-            link.classList.remove('active');
-            
-            // Comparar rutas normalizadas
-            if (linkPath === currentPath || 
-                (linkPath === '/' && currentPath === '') ||
-                (linkPath === currentPath + '/') ||
-                (currentPath === linkPath + '/')) {
-                link.classList.add('active');
-                activeLinkFound = true;
+                // Cancelar cualquier restauración pendiente
+                if (restoreTimeout) {
+                    clearTimeout(restoreTimeout);
+                    restoreTimeout = null;
+                }
             }
         });
 
-        // Activar 'Mi blog' por defecto si no se encontró coincidencia
-        if (!activeLinkFound) {
-            const blogLinks = document.querySelectorAll('.Navigator a[href="/index.html"], .Navigator a[href="/"]');
-            if (blogLinks.length > 0) {
-                blogLinks[0].classList.add('active');
-            }
-        }
+        link.addEventListener("mouseleave", () => {
+            link.classList.remove("hovering");
+
+            // Programar restauración con delay
+            restoreTimeout = setTimeout(() => {
+                activeLink.classList.add("active");
+            }, 100); // Aquí defines el delay para que no sea inmediato
+        });
     });
 </script>
+
 </body>
 </html>
