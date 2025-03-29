@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="/estilos.css">
 </head>
 <body>
-    <div id="Navigator">
+    <div class="Navigator">
         <nav>
             <a href="/index.html">Mi blog</a>
             <a href="/Login/login.html">Login</a>
-            <a href="/cardAripods/index.html">Card Airpods</a>
+            <a href="/cardAripods/Airpods.html">Card Airpods</a>
             <a href="/Dashboard/dashboard.html">DashBoard</a>
             <a href="/Layout/layout.html">Layout</a>
             <a href="/Contacto/contacto.html">Contacto</a>
@@ -46,5 +46,51 @@
 
     </main>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Normalizar la ruta actual (eliminar '/' final y considerar 'index.html' como '/')
+        let currentPath = window.location.pathname;
+        if (currentPath.endsWith('/')) {
+            currentPath = currentPath.slice(0, -1);
+        }
+        if (currentPath === '' || currentPath.endsWith('index.html')) {
+            currentPath = '/';
+        }
+
+        const navLinks = document.querySelectorAll('.Navigator a');
+        let activeLinkFound = false;
+
+        navLinks.forEach(link => {
+            // Normalizar la ruta del enlace
+            let linkPath = link.getAttribute('href');
+            if (linkPath.endsWith('/')) {
+                linkPath = linkPath.slice(0, -1);
+            }
+            if (linkPath.endsWith('index.html')) {
+                linkPath = linkPath.replace('index.html', '');
+                if (linkPath === '') linkPath = '/';
+            }
+
+            link.classList.remove('active');
+            
+            // Comparar rutas normalizadas
+            if (linkPath === currentPath || 
+                (linkPath === '/' && currentPath === '') ||
+                (linkPath === currentPath + '/') ||
+                (currentPath === linkPath + '/')) {
+                link.classList.add('active');
+                activeLinkFound = true;
+            }
+        });
+
+        // Activar 'Mi blog' por defecto si no se encontró coincidencia
+        if (!activeLinkFound) {
+            const blogLinks = document.querySelectorAll('.Navigator a[href="/index.html"], .Navigator a[href="/"]');
+            if (blogLinks.length > 0) {
+                blogLinks[0].classList.add('active');
+            }
+        }
+    });
+</script>
 </body>
 </html>
