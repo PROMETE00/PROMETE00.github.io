@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import FontAwesome from '@/components/FontAwesome';
+import Navbar from '@/components/Navbar'; // Importa el Navbar
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,9 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>
+      <body className={`${inter.className} bg-gray-50`}>
         <FontAwesome />
-        {children}
+        <Navbar />
+        <div className="pt-4"> {/* Añade padding-top para compensar el Navbar */}
+          {children}
+        </div>
       </body>
     </html>
   );

@@ -2,9 +2,9 @@ import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faClipboardList, 
-  faClock, 
   faCircleCheck, 
-  faGear,
+  faGear, 
+  faClock,
   faEye
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -12,9 +12,9 @@ type CardColor = 'blue' | 'yellow' | 'green' | 'red' | 'purple' | 'gray';
 
 const iconMap: Record<string, IconDefinition> = {
   'clipboard-list': faClipboardList,
-  'clock': faClock,
   'circle-check': faCircleCheck,
   'gear': faGear,
+  'clock': faClock,
   'eye': faEye
 };
 
@@ -36,15 +36,16 @@ interface StatsCardProps {
 
 export default function StatsCard({ title, value, icon, color }: StatsCardProps) {
   return (
-    <div className={`border-l-4 ${colorClasses[color]} p-4 rounded-lg shadow`}>
-      <div className="flex justify-between items-center">
-        <div>
-          <p className="text-sm font-medium">{title}</p>
-          <p className="text-2xl font-semibold">{value}</p>
+    <div className={`border-l-4 ${colorClasses[color]} p-3 rounded-lg shadow h-full`}>
+      <div className="flex justify-between items-center h-full">
+        <div className="flex flex-col justify-center">
+          <p className="text-xs font-medium mb-1">{title}</p>
+          <p className="text-lg font-semibold">{value}</p>
         </div>
         <FontAwesomeIcon 
           icon={iconMap[icon]} 
-          className={`text-2xl ${colorClasses[color].split(' ')[1]}`} 
+          className="text-sm" // Iconos más pequeños
+          color={colorClasses[color].split(' ')[1].replace('text-', '')}
         />
       </div>
     </div>
