@@ -6,7 +6,7 @@ export type Service = {
   descripcionServicio?: string;
   observaciones?: string;
   responsablesInvolucrados?: string;
-  estatus?: string;
+  estatus: 'Pendiente' | 'Activo' | 'Completado' | 'Necesita Supervisión';
   fechaTerminacion?: string;
   [key: string]: string | undefined;
 };
