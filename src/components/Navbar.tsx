@@ -15,7 +15,7 @@ export default function Navbar() {
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
             <Image 
-              src="/images/servicio.png" // Reemplaza con la ruta de tu logo
+              src="/images/servicio.png"
               alt="Logo de la empresa"
               width={100}
               height={100}
@@ -28,9 +28,9 @@ export default function Navbar() {
         {/* Menú de navegación */}
         <div className="flex space-x-1">
           <Link 
-            href="/servicios" 
+            href="/services"  // Cambiado a /services
             className={`px-3 py-2 rounded-md transition-colors flex items-center ${
-              pathname === '/servicios' 
+              pathname === '/services'  // Actualizado para coincidir
                 ? 'bg-blue-500 text-white' 
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
@@ -39,9 +39,9 @@ export default function Navbar() {
             <span className="text-sm">Servicios</span>
           </Link>
           <Link 
-            href="/horarios" 
+            href="/schedules"  // Cambiado a /schedules
             className={`px-3 py-2 rounded-md transition-colors flex items-center ${
-              pathname === '/horarios' 
+              pathname === '/schedules'  // Actualizado para coincidir
                 ? 'bg-blue-500 text-white' 
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
