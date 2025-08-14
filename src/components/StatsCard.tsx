@@ -1,3 +1,4 @@
+'use client';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -32,20 +33,42 @@ interface StatsCardProps {
   value: number;
   icon: keyof typeof iconMap;
   color: CardColor;
+  loading?: boolean;
+  percentage?: number;
+  trend?: 'up' | 'down' | 'neutral' | 'warning';
 }
 
-export default function StatsCard({ title, value, icon, color }: StatsCardProps) {
+export default function StatsCard({ 
+  title, 
+  value, 
+  icon, 
+  color, 
+  loading = false,
+  percentage,
+  trend
+}: StatsCardProps) {
+  const iconColor = colorClasses[color].split(' ')[1].replace('text-', '');
+
   return (
     <div className={`border-l-4 ${colorClasses[color]} p-3 rounded-lg shadow h-full`}>
       <div className="flex justify-between items-center h-full">
         <div className="flex flex-col justify-center">
           <p className="text-xs font-medium mb-1">{title}</p>
-          <p className="text-lg font-semibold">{value}</p>
+          {loading ? (
+            <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4"></div>
+          ) : (
+            <div className="flex items-center">
+              <p className="text-lg font-semibold mr-2">{value}</p>
+              {percentage !== undefined && (
+                <span className="text-xs opacity-75">({percentage}%)</span>
+              )}
+            </div>
+          )}
         </div>
         <FontAwesomeIcon 
           icon={iconMap[icon]} 
-          className="text-sm" // Iconos más pequeños
-          color={colorClasses[color].split(' ')[1].replace('text-', '')}
+          className="text-sm"
+          color={iconColor}
         />
       </div>
     </div>

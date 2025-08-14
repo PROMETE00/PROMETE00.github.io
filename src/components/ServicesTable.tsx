@@ -1,5 +1,4 @@
 'use client';
-
 import { Service } from '@/types';
 
 // Definimos el orden de los estados
@@ -56,7 +55,34 @@ const formatSheetDate = (dateString: string | undefined): string => {
   return dateString;
 };
 
-export default function ServicesTable({ services }: { services: Service[] }) {
+interface ServicesTableProps {
+  services: Service[];
+  isLoading?: boolean;
+  isRefreshing?: boolean;
+}
+
+export default function ServicesTable({ services, isLoading, isRefreshing }: ServicesTableProps) {
+  // Definimos las columnas que queremos mostrar y su orden
+  const tableHeaders = [
+    'id',
+    'nombreSolicitante',
+    'areaSolicitante',
+    'descripcionServicio',
+    'fechaElaboracionSolicitud',
+    'fechaTerminacion',
+    'estatus',
+    'responsablesInvolucrados',
+    'observaciones'
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-8 bg-gray-50 rounded-lg">
+        <p className="text-gray-500">Cargando servicios...</p>
+      </div>
+    );
+  }
+
   if (!services?.length) {
     return (
       <div className="text-center py-8 bg-gray-50 rounded-lg">
@@ -70,77 +96,65 @@ export default function ServicesTable({ services }: { services: Service[] }) {
     return (statusOrder[a.estatus] || 5) - (statusOrder[b.estatus] || 5);
   });
 
-  // Agrupar servicios por estado para secciones separadas
-  const groupedServices = sortedServices.reduce((acc: Record<string, Service[]>, service) => {
-    const status = service.estatus || 'Otro';
-    if (!acc[status]) {
-      acc[status] = [];
-    }
-    acc[status].push(service);
-    return acc;
-  }, {});
-
-  // Filtramos y ordenamos los headers
-  const headers = Object.keys(services[0])
-    .filter(Boolean)
-    .sort((a, b) => {
-      const order = ['id', 'nombreSolicitante', 'descripcionServicio', 'estatus', 'fechaElaboracionSolicitud'];
-      return (order.indexOf(a) - order.indexOf(b)) || a.localeCompare(b);
-    });
+  // Función segura para acceder a las propiedades del servicio
+  const getServiceValue = (service: Service, key: string): string => {
+    const value = service[key as keyof Service];
+    return value !== undefined && value !== null ? String(value) : '-';
+  };
 
   return (
     <div className="overflow-x-auto bg-white rounded-lg shadow border border-gray-200">
+      {isRefreshing && (
+        <div className="bg-blue-50 text-blue-700 p-2 text-center text-sm">
+          Actualizando datos...
+        </div>
+      )}
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
             <th className="w-2 px-2"></th> {/* Columna para la bandera */}
-            {headers.map(header => (
+            {tableHeaders.map(header => (
               <th 
                 key={header}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
               >
                 {header === 'nombreSolicitante' ? 'Solicitante' : 
                  header === 'descripcionServicio' ? 'Descripción' :
-                 header === 'fechaElaboracionSolicitud' ? 'Fecha' :
+                 header === 'fechaElaboracionSolicitud' ? 'Fecha Solicitud' :
+                 header === 'fechaTerminacion' ? 'Fecha Terminación' :
                  header === 'responsablesInvolucrados' ? 'Responsables' :
+                 header === 'areaSolicitante' ? 'Área' :
+                 header === 'observaciones' ? 'Observaciones' :
+                 header === 'estatus' ? 'Estado' :
                  header.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
               </th>
             ))}
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {Object.entries(groupedServices).map(([status, statusServices]) => (
-            <>
-              {statusServices.map((service, index) => (
-                <tr key={`${status}-${index}`} className="hover:bg-gray-50 group">
-                  <td className={`w-2 ${getStatusColor(service.estatus)} group-hover:opacity-90`}></td>
-                  {headers.map(header => (
-                    <td 
-                      key={`${status}-${index}-${header}`} 
-                      className={`px-6 py-4 whitespace-nowrap text-sm ${
-                        header === 'estatus' ? 'font-medium' : 'text-gray-500'
-                      } ${getStatusTextClass(service.estatus)}`}
-                    >
-                      {header === 'estatus' ? (
-                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                          ${getStatusColor(service.estatus).replace('500', '100')}`}>
-                          {service[header]}
-                        </span>
-                      ) : header.includes('fecha') ? (
-                        formatSheetDate(service[header])
-                      ) : (
-                        service[header]
-                      )}
-                    </td>
-                  ))}
-                </tr>
+          {sortedServices.map((service, index) => (
+            <tr key={`${service.id || index}`} className="hover:bg-gray-50 group">
+              <td className={`w-2 ${getStatusColor(service.estatus)} group-hover:opacity-90`}></td>
+              {tableHeaders.map(header => (
+                <td 
+                  key={`${service.id || index}-${header}`}
+                  className={`px-6 py-4 whitespace-nowrap text-sm ${
+                    header === 'estatus' ? 'font-medium' : 'text-gray-500'
+                  } ${header === 'estatus' ? getStatusTextClass(service.estatus) : ''}`}
+                >
+                  {header === 'estatus' ? (
+                    <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      ${getStatusColor(service.estatus).replace('500', '100')}`}>
+                      {getServiceValue(service, header)}
+                    </span>
+                  ) : header.includes('fecha') ? (
+                    formatSheetDate(getServiceValue(service, header))
+                  ) : (
+                    getServiceValue(service, header)
+                  )}
+                </td>
               ))}
-              {status === 'Completado' && (
-                <tr className="bg-gray-50">
-                  <td colSpan={headers.length + 1} className="h-4"></td>
-                </tr>
-              )}
-            </>
+            </tr>
           ))}
         </tbody>
       </table>
