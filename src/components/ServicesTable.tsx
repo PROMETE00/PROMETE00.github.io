@@ -112,24 +112,24 @@ export default function ServicesTable({ services, isLoading, isRefreshing }: Ser
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="w-2 px-2"></th> {/* Columna para la bandera */}
-            {tableHeaders.map(header => (
-              <th 
-                key={header}
+            <th className="w-2 px-2"></th>{/* Columna para la bandera */}
+              {tableHeaders.map(header => (
+            <th 
+              key={header}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
               >
-                {header === 'nombreSolicitante' ? 'Solicitante' : 
-                 header === 'descripcionServicio' ? 'Descripción' :
-                 header === 'fechaElaboracionSolicitud' ? 'Fecha Solicitud' :
-                 header === 'fechaTerminacion' ? 'Fecha Terminación' :
-                 header === 'responsablesInvolucrados' ? 'Responsables' :
-                 header === 'areaSolicitante' ? 'Área' :
-                 header === 'observaciones' ? 'Observaciones' :
-                 header === 'estatus' ? 'Estado' :
-                 header.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-              </th>
-            ))}
-          </tr>
+      {header === 'nombreSolicitante' ? 'Solicitante' : 
+       header === 'descripcionServicio' ? 'Descripción' :
+       header === 'fechaElaboracionSolicitud' ? 'Fecha Solicitud' :
+       header === 'fechaTerminacion' ? 'Fecha Terminación' :
+       header === 'responsablesInvolucrados' ? 'Responsables' :
+       header === 'areaSolicitante' ? 'Área' :
+       header === 'observaciones' ? 'Observaciones' :
+       header === 'estatus' ? 'Estado' :
+       header.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+    </th>
+  ))}
+</tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {sortedServices.map((service, index) => (

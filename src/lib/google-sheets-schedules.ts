@@ -8,7 +8,7 @@ export async function fetchScheduleData(): Promise<ScheduleWeek[]> {
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}!B3:Q100?key=${API_KEY}`;
   
   try {
-    const response = await fetch(url, { 
+    const response = await fetch(url, {
       next: { revalidate: 30 }
     });
     
@@ -34,50 +34,17 @@ function parseScheduleData(data: any): ScheduleWeek[] {
   const weeks: ScheduleWeek[] = [];
   let currentWeek: ScheduleWeek | null = null;
   let currentWeekData: ScheduleEntry[] = [];
-  let currentDate = new Date();
-  
-  // Buscar la semana actual primero
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
-    
-    if (row[1] && typeof row[1] === 'string' && row[1].startsWith('SEMANA ')) {
-      const weekRange = row[1].replace('SEMANA ', '');
-      const [dateRange, month] = weekRange.split(' DE ');
-      const [startDay, endDay] = dateRange.split('-').map(Number);
-      
-      // Crear fechas para comparación (asumiendo formato "DD-DD DE MES")
-      const year = currentDate.getFullYear();
-      const monthIndex = getMonthIndex(month);
-      const weekStartDate = new Date(year, monthIndex, startDay);
-      const weekEndDate = new Date(year, monthIndex, endDay);
-      
-      // Verificar si la fecha actual está en este rango
-      if (currentDate >= weekStartDate && currentDate <= weekEndDate) {
-        currentWeek = {
-          range: weekRange,
-          data: [],
-          isCurrent: true
-        };
-        i += 2; // Saltar encabezados
-        break; // Encontramos la semana actual
-      }
-    }
-  }
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0=Domingo, 1=Lunes,...,6=Sábado
 
-  // Si no encontramos semana actual, procesar normalmente
-  if (!currentWeek) {
-    currentWeek = {
-      range: '',
-      data: [],
-      isCurrent: false
-    };
-  }
+  // Determinar si debemos mostrar esta semana o la próxima
+  const showNextWeek = dayOfWeek === 0 || dayOfWeek === 6; // Si es sábado o domingo
 
   // Procesar todas las semanas
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
     
-    if (row[1] && typeof row[1] === 'string' && row[1].startsWith('SEMANA ')) {
+    if (row && row[1] && typeof row[1] === 'string' && row[1].startsWith('SEMANA ')) {
       // Guardar semana anterior si existe
       if (currentWeek && currentWeekData.length > 0) {
         currentWeek.data = currentWeekData;
@@ -85,18 +52,46 @@ function parseScheduleData(data: any): ScheduleWeek[] {
         currentWeekData = [];
       }
       
-      // Crear nueva semana
+      const weekRange = row[1].replace('SEMANA ', '').trim();
+      const [dateRange, month] = weekRange.split(' DE ');
+      const [startDay, endDay] = dateRange.split('-').map(s => parseInt(s.trim(), 10));
+      
+      const monthIndex = getMonthIndex(month);
+      if (monthIndex === -1) continue;
+      
+      const currentYear = today.getFullYear();
+      const weekStartDate = new Date(currentYear, monthIndex, startDay);
+      const weekEndDate = new Date(currentYear, monthIndex, endDay);
+
+      // Ajustar para meses que cruzan años (ej: diciembre-enero)
+      if (monthIndex === 11 && today.getMonth() === 0) {
+        weekStartDate.setFullYear(currentYear - 1);
+        weekEndDate.setFullYear(currentYear - 1);
+      }
+
+      // Determinar si es la semana que debemos mostrar
+      let isCurrentWeek = false;
+      
+      if (showNextWeek) {
+        // Buscamos la primera semana que comienza después de hoy
+        isCurrentWeek = weekStartDate > today;
+      } else {
+        // Buscamos la semana que contiene hoy
+        isCurrentWeek = today >= weekStartDate && today <= weekEndDate;
+      }
+
       currentWeek = {
-        range: row[1].replace('SEMANA ', ''),
+        range: weekRange,
         data: [],
-        isCurrent: false
+        isCurrent: isCurrentWeek
       };
+      
       i += 2; // Saltar encabezados
       continue;
     }
 
     // Procesar filas de horario
-    if (currentWeek && row[0] && typeof row[0] === 'string' && row[0].match(/^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/)) {
+    if (currentWeek && row && row[0] && typeof row[0] === 'string' && row[0].match(/^\d{1,2}:\d{2}-\d{1,2}:\d{2}$/)) {
       const entry: ScheduleEntry = {
         hora: row[0],
         lunes: getDayData(row, 1),
@@ -113,6 +108,17 @@ function parseScheduleData(data: any): ScheduleWeek[] {
   if (currentWeek && currentWeekData.length > 0) {
     currentWeek.data = currentWeekData;
     weeks.push(currentWeek);
+  }
+
+  // Si no encontramos semana actual, seleccionar la primera disponible
+  if (!weeks.some(w => w.isCurrent) && weeks.length > 0) {
+    if (showNextWeek) {
+      // Si es fin de semana y no encontramos semana futura, mostrar la última disponible
+      weeks[weeks.length - 1].isCurrent = true;
+    } else {
+      // Si es día de semana y no encontramos coincidencia, mostrar la primera
+      weeks[0].isCurrent = true;
+    }
   }
 
   return weeks;
@@ -133,4 +139,21 @@ function getMonthIndex(monthName: string): number {
     'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
   ];
   return months.findIndex(m => m === monthName.toUpperCase());
+}
+
+// Funciones auxiliares para obtener fechas de la semana
+function getWeekStartDate(weekRange: string): Date {
+  const [dateRange, month] = weekRange.split(' DE ');
+  const [startDay] = dateRange.split('-').map(s => parseInt(s.trim(), 10));
+  const monthIndex = getMonthIndex(month);
+  const currentYear = new Date().getFullYear();
+  return new Date(currentYear, monthIndex, startDay);
+}
+
+function getWeekEndDate(weekRange: string): Date {
+  const [dateRange, month] = weekRange.split(' DE ');
+  const [, endDay] = dateRange.split('-').map(s => parseInt(s.trim(), 10));
+  const monthIndex = getMonthIndex(month);
+  const currentYear = new Date().getFullYear();
+  return new Date(currentYear, monthIndex, endDay);
 }

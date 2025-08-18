@@ -18,10 +18,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body className={`${inter.className} bg-gray-50`}>
+      <body className={`${inter.className} bg-[#0D1117]`}>
         <FontAwesome />
         <Navbar />
-        <div className="pt-4"> {/* Añade padding-top para compensar el Navbar */}
+        <div className=""> {/* Añade padding-top para compensar el Navbar */}
           {children}
         </div>
       </body>
